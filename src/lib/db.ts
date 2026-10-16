@@ -18,6 +18,21 @@ db.version(2).stores({
   viajes: 'id, desde, synced, deleted',
 })
 
+// v3: las carteras pasan a la parte "Accesorio"
+db.version(3)
+  .stores({})
+  .upgrade((tx) =>
+    tx
+      .table('prendas')
+      .where('parte')
+      .equals('Cartera')
+      .modify((p) => {
+        p.parte = 'Accesorio'
+        p.updatedAt = Date.now()
+        p.synced = 0
+      }),
+  )
+
 export const nuevoId = () =>
   typeof crypto !== 'undefined' && 'randomUUID' in crypto
     ? crypto.randomUUID()

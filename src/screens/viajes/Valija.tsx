@@ -12,9 +12,8 @@ import { useNav } from '../../nav'
 const GRUPOS: { titulo: string; partes: Parte[] }[] = [
   { titulo: 'Arriba y vestidos', partes: ['Arriba', 'Entero'] },
   { titulo: 'Abajo', partes: ['Abajo'] },
-  { titulo: 'Abrigos', partes: ['Abrigo'] },
+  { titulo: 'Abrigos y chaquetas', partes: ['Abrigo', 'Chaqueta'] },
   { titulo: 'Calzado', partes: ['Calzado'] },
-  { titulo: 'Carteras', partes: ['Cartera'] },
   { titulo: 'Accesorios', partes: ['Accesorio'] },
   { titulo: 'Cinturones', partes: ['Cinturón'] },
 ]

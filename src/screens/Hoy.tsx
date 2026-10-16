@@ -5,7 +5,7 @@ import { esHoy, fechaCorta, useLooks, usePrendas, useUsos, useViajes } from '../
 import { prefs } from '../lib/prefs'
 import { usarLook } from '../lib/repo'
 import { extrasDe, sugerir } from '../lib/suggest'
-import { esBase, type Ocasion, type Prenda } from '../lib/types'
+import { esBase, esCapa, type Ocasion, type Prenda } from '../lib/types'
 import { climaPorTemp, descripcionCodigo, isoDia, obtenerClima, type ClimaHoy } from '../lib/weather'
 import { useNav } from '../nav'
 
@@ -206,13 +206,14 @@ function GrillaLook({ ps }: { ps: Prenda[] }) {
   )
 }
 
-const ETIQUETA_EXTRA: Record<string, string> = {
-  Abrigo: 'Sumá abrigo',
-  Calzado: 'Calzado',
-  Cartera: 'Cartera',
-  Accesorio: 'Accesorio',
-  Cinturón: 'Cinturón',
-}
+const etiquetaExtra = (p: Prenda) =>
+  p.parte === 'Abrigo'
+    ? 'Sumá abrigo'
+    : p.parte === 'Chaqueta'
+      ? 'Sumá chaqueta'
+      : p.parte === 'Accesorio'
+        ? p.tipo.charAt(0).toUpperCase() + p.tipo.slice(1)
+        : p.parte
 
 function Extras({ ps }: { ps: Prenda[] }) {
   const { abrir } = useNav()
@@ -223,13 +224,13 @@ function Extras({ ps }: { ps: Prenda[] }) {
         <button
           key={p.id}
           onClick={() => abrir({ tipo: 'prenda', id: p.id })}
-          className={`relative border bg-papel text-left active:bg-crema ${p.parte === 'Abrigo' ? 'border-acento' : 'border-linea'}`}
+          className={`relative border bg-papel text-left active:bg-crema ${esCapa(p) ? 'border-acento' : 'border-linea'}`}
         >
           <div className="aspect-square p-2">
             <Foto blob={p.foto} alt={p.nombre} className="h-full w-full" />
           </div>
           <div className="border-t border-linea px-2 py-1.5">
-            <div className={`rotulo !text-[10px] ${p.parte === 'Abrigo' ? '!text-acento' : ''}`}>{ETIQUETA_EXTRA[p.parte] ?? p.parte}</div>
+            <div className={`rotulo !text-[10px] ${esCapa(p) ? '!text-acento' : ''}`}>{etiquetaExtra(p)}</div>
             <div className="truncate text-[12px] font-medium">{p.nombre}</div>
           </div>
         </button>

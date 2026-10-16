@@ -158,7 +158,7 @@ async function pull(_uid: string) {
       id: r.id as string,
       nombre: (r.nombre as string) ?? '',
       tipo: r.tipo as Prenda['tipo'],
-      parte: r.parte as Prenda['parte'],
+      parte: (r.parte === 'Cartera' ? 'Accesorio' : r.parte) as Prenda['parte'],
       color: (r.color as string) ?? '',
       tela: (r.tela as string) ?? '',
       clima: (r.clima as Prenda['clima']) ?? [],

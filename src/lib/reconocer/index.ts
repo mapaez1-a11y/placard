@@ -28,9 +28,12 @@ const FRASES_TIPO: [Tipo, string][] = [
   ['pollera', 'skirt'],
   ['vestido', 'dress'],
   ['abrigo', 'coat'],
-  ['abrigo', 'jacket'],
+  ['abrigo', 'long wool coat'],
   ['abrigo', 'puffer jacket'],
-  ['abrigo', 'blazer'],
+  ['chaqueta', 'jacket'],
+  ['chaqueta', 'denim jacket'],
+  ['chaqueta', 'blazer'],
+  ['chaqueta', 'leather jacket'],
   ['calzado', 'shoes'],
   ['calzado', 'sneakers'],
   ['calzado', 'boots'],
@@ -157,7 +160,9 @@ export function climaSugerido(tipo: Tipo, tela: string | null): Clima[] {
     case 'sweater':
       return ['Templado', 'Frío']
     case 'abrigo':
-      return ['Frío', 'Templado']
+      return ['Frío']
+    case 'chaqueta':
+      return ['Templado', 'Frío']
     case 'pantalón':
       return t === 'jean' ? ['Calor', 'Templado', 'Frío'] : ['Templado', 'Frío']
     case 'pollera':

@@ -4,7 +4,7 @@ import { db } from '../lib/db'
 import { comprimirFoto, quitarFondo } from '../lib/image'
 import { reconocerColor, reconocerPrenda, reconocimientoActivo } from '../lib/reconocer'
 import { crearPrenda, editarPrenda } from '../lib/repo'
-import { CLIMAS, OCASIONES, PARTE_POR_TIPO, PARTES, PARTES_COMPLEMENTO, TIPOS, type Clima, type Ocasion, type Parte, type Tipo } from '../lib/types'
+import { CLIMAS, OCASIONES, PARTE_POR_TIPO, PARTES_VISIBLES, PARTES_COMPLEMENTO, TIPOS, type Clima, type Ocasion, type Parte, type Tipo } from '../lib/types'
 import { useNav } from '../nav'
 
 const COLORES = ['Blanco', 'Negro', 'Gris', 'Beige', 'Crema', 'Camel', 'Marrón', 'Azul marino', 'Celeste', 'Jean', 'Verde', 'Oliva', 'Rojo', 'Bordó', 'Rosa', 'Amarillo', 'Naranja', 'Violeta', 'Estampado', 'Rayado', 'Dorado', 'Plateado', 'Perlado']
@@ -73,11 +73,17 @@ export default function Agregar({ idEditar, tipoInicial }: { idEditar?: string; 
         cambios.push('tipo')
       }
       const tipoFinal = libre('tipo') ? r.tipo : null
-      if (r.tela && libre('tela')) (setTela(r.tela), cambios.push('tela'))
+      const accesorio = PARTE_POR_TIPO[tipoFinal ?? tipo] === 'Accesorio'
+      let tono: string | null = null
+      if (accesorio) {
+        // En accesorios no va material: solo el tono (dorado, plateado o color)
+        tono = r.tela === 'Oro' ? 'Dorado' : r.tela === 'Plata' ? 'Plateado' : null
+        if (tono && libre('color')) (setColor(tono), cambios.push('color'))
+      } else if (r.tela && libre('tela')) (setTela(r.tela), cambios.push('tela'))
       if (r.clima.length && libre('clima')) (setClima(r.clima), cambios.push('clima'))
       if (r.ocasiones.length && libre('ocasiones')) (setOcasiones(r.ocasiones), cambios.push('ocasiones'))
       marcar(cambios)
-      const partes = [tipoFinal && cap(tipoFinal), col?.toLowerCase(), r.tela?.toLowerCase()].filter(Boolean)
+      const partes = [tipoFinal && cap(tipoFinal), (tono ?? col)?.toLowerCase(), !accesorio && r.tela?.toLowerCase()].filter(Boolean)
       setReco({ fase: 'listo', texto: partes.length ? `Parece: ${partes.join(' · ')}. Revisá y cambiá lo que quieras.` : 'Listo. Revisá los datos.' })
     } catch (e) {
       console.warn('Reconocimiento', e)
@@ -155,7 +161,7 @@ export default function Agregar({ idEditar, tipoInicial }: { idEditar?: string; 
       tipo,
       parte,
       color: color.trim(),
-      tela: tela.trim(),
+      tela: parte === 'Accesorio' ? '' : tela.trim(),
       clima: CLIMAS.filter((c) => clima.includes(c)),
       ocasiones: OCASIONES.filter((o) => ocasiones.includes(o)),
     }
@@ -246,14 +252,43 @@ export default function Agregar({ idEditar, tipoInicial }: { idEditar?: string; 
             <Selector value={tipo} onChange={(v) => cambiarTipo(v as Tipo)} opciones={TIPOS.map((t) => [t, cap(t)])} />
           </Campo>
           <Campo etiqueta="Parte">
-            <Selector value={parte} onChange={(v) => (tocar('tipo'), setParte(v as Parte))} opciones={PARTES.map((p) => [p, p])} />
+            <Selector value={parte} onChange={(v) => (tocar('tipo'), setParte(v as Parte))} opciones={(tipo === 'vestido' || parte === 'Entero' ? [...PARTES_VISIBLES, 'Entero'] : [...PARTES_VISIBLES]).map((p) => [p, p === 'Entero' ? 'Entero (vestido)' : p])} />
           </Campo>
-          <Campo etiqueta={etiqueta('Color', 'color')}>
-            <input list="colores" value={color} onChange={(e) => (tocar('color'), setColor(e.target.value))} placeholder="Blanco" className={estiloCampo} />
-          </Campo>
-          <Campo etiqueta={etiqueta(esComplemento(tipo) ? 'Material' : 'Tela', 'tela')}>
-            <input list="telas" value={tela} onChange={(e) => (tocar('tela'), setTela(e.target.value))} placeholder="Algodón" className={estiloCampo} />
-          </Campo>
+          {parte === 'Accesorio' ? (
+            <div className="col-span-2 space-y-2">
+              <div role="group" aria-label="Tono" className="space-y-1">
+                <span className="rotulo !text-[11px]">{etiqueta('Tono', 'color')}</span>
+                <div className="grid grid-cols-3 border border-tinta">
+                  {(['Dorado', 'Plateado', 'Color'] as const).map((t, i) => {
+                    const actual = color === 'Dorado' || color === 'Plateado' ? color : 'Color'
+                    return (
+                      <button
+                        key={t}
+                        type="button"
+                        aria-pressed={actual === t}
+                        onClick={() => (tocar('color'), setColor(t === 'Color' ? (actual === 'Color' ? color : '') : t))}
+                        className={`titulo min-h-11 text-[16px] ${i ? 'border-l border-tinta' : ''} ${actual === t ? 'bg-tinta text-crema' : ''}`}
+                      >
+                        {t}
+                      </button>
+                    )
+                  })}
+                </div>
+              </div>
+              {color !== 'Dorado' && color !== 'Plateado' && (
+                <input list="colores" value={color} onChange={(e) => (tocar('color'), setColor(e.target.value))} placeholder="¿De qué color? Ej: rojo, perlado" aria-label="Color del accesorio" className={estiloCampo} />
+              )}
+            </div>
+          ) : (
+            <>
+              <Campo etiqueta={etiqueta('Color', 'color')}>
+                <input list="colores" value={color} onChange={(e) => (tocar('color'), setColor(e.target.value))} placeholder="Blanco" className={estiloCampo} />
+              </Campo>
+              <Campo etiqueta={etiqueta(esComplemento(tipo) ? 'Material' : 'Tela', 'tela')}>
+                <input list="telas" value={tela} onChange={(e) => (tocar('tela'), setTela(e.target.value))} placeholder="Algodón" className={estiloCampo} />
+              </Campo>
+            </>
+          )}
           <div className="col-span-2">
             <Campo etiqueta="Nombre (opcional)">
               <input

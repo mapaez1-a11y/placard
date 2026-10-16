@@ -1,4 +1,4 @@
-import type { Clima, DiaClima, Look, Ocasion, Prenda, Uso } from './types'
+import { esCapa, type Clima, type DiaClima, type Look, type Ocasion, type Prenda, type Uso } from './types'
 import { climaPorTemp, desdeIso, esLluvia } from './weather'
 
 const DIA = 86_400_000
@@ -94,7 +94,11 @@ export function sugerir(
       .sort((x, y) => y.score - x.score)
       .slice(0, 60)
 
-    const abrigos = elegirAccesorios(prendas.filter((p) => p.parte === 'Abrigo'), ocasion, ahora, ['Frío', 'Templado'])
+    // Mucho frío: primero abrigo; fresco: primero chaqueta
+    const prefiere = temps.min < 10 ? 'Abrigo' : 'Chaqueta'
+    const abrigos = elegirAccesorios(prendas.filter(esCapa), ocasion, ahora, ['Frío', 'Templado']).sort(
+      (a, b) => Number(b.parte === prefiere) - Number(a.parte === prefiere),
+    )
     const calzados = elegirAccesorios(prendas.filter((p) => p.parte === 'Calzado'), ocasion, ahora, [clima])
     const necesitaAbrigo = temps.min < 16
     const porTipo = (tipo: string) => elegirComplementos(prendas.filter((p) => p.tipo === tipo), ocasion, ahora)
@@ -116,7 +120,7 @@ export function sugerir(
         motivo: motivo(c.prendas, clima, ahora),
         avisoFrio: necesitaAbrigo
           ? abrigo
-            ? 'A la mañana hace frío: sumá un abrigo.'
+            ? `A la mañana hace frío: sumá ${abrigo.parte === 'Chaqueta' ? 'una chaqueta' : 'un abrigo'}.`
             : 'A la mañana hace frío: sumá un abrigo (todavía no cargaste ninguno).'
           : null,
         aviso: nivel.aviso,
@@ -261,7 +265,7 @@ export function faltantesValija(valija: Prenda[], dias: DiaClima[]): string[] {
   const tieneEntero = base.some((p) => p.parte === 'Entero')
   if (!tieneEntero && tieneArriba !== tieneAbajo) avisos.push(tieneArriba ? 'Te falta algo de abajo para combinar.' : 'Te falta algo de arriba para combinar.')
   const frias = dias.filter((d) => d.min < 16).length
-  if (frias && !valija.some((p) => p.parte === 'Abrigo')) avisos.push(`${frias === 1 ? 'Una mañana baja' : `${frias} mañanas bajan`} de 16°: sumá un abrigo.`)
+  if (frias && !valija.some(esCapa)) avisos.push(`${frias === 1 ? 'Una mañana baja' : `${frias} mañanas bajan`} de 16°: sumá un abrigo o una chaqueta.`)
   const lluvia = dias.filter((d) => esLluvia(d.codigo)).length
   if (lluvia) avisos.push(`Pronostican lluvia ${lluvia === 1 ? 'un día' : `${lluvia} días`}: llevá calzado cerrado y paraguas.`)
   if (!valija.some((p) => p.parte === 'Calzado')) avisos.push('No elegiste calzado.')
@@ -285,10 +289,11 @@ export function sugerirValija(placard: Prenda[], dias: DiaClima[], ocasion: Ocas
     ...tomar('Arriba', Math.min(Math.ceil(n * 0.7) + 1, 8)),
     ...tomar('Abajo', Math.min(Math.ceil(n / 2) + 1, 5)),
     ...tomar('Entero', Math.min(Math.ceil(n / 3), 3)),
-    ...(hayFrio ? tomar('Abrigo', n > 5 ? 2 : 1, false) : []),
+    ...(hayFrio ? tomar(dias.some((d) => d.min < 10) ? 'Abrigo' : 'Chaqueta', 1, false) : []),
+    ...(hayFrio && n > 4 ? tomar(dias.some((d) => d.min < 10) ? 'Chaqueta' : 'Abrigo', 1, false) : []),
     ...tomar('Calzado', n > 3 ? 2 : 1, false),
-    ...tomar('Cartera', 1, false),
-    ...tomar('Accesorio', 2, false),
+    ...placard.filter((p) => p.tipo === 'cartera').sort((a, b) => versatil(b) - versatil(a)).slice(0, 1),
+    ...placard.filter((p) => p.parte === 'Accesorio' && p.tipo !== 'cartera').sort((a, b) => versatil(b) - versatil(a)).slice(0, 2),
     ...tomar('Cinturón', 1, false),
   ]
   return elegidas.map((p) => p.id)

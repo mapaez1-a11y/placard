@@ -1,7 +1,12 @@
-export const TIPOS = ['blusa', 'camisa', 'remera', 'sweater', 'pantalón', 'short', 'pollera', 'vestido', 'abrigo', 'calzado', 'cartera', 'aros', 'collar', 'cinturón'] as const
+export const TIPOS = ['blusa', 'camisa', 'remera', 'sweater', 'pantalón', 'short', 'pollera', 'vestido', 'abrigo', 'chaqueta', 'calzado', 'cartera', 'aros', 'collar', 'cinturón'] as const
 export type Tipo = (typeof TIPOS)[number]
 
-export const PARTES = ['Arriba', 'Abajo', 'Entero', 'Abrigo', 'Calzado', 'Cartera', 'Accesorio', 'Cinturón'] as const
+/** Entero = vestido (va solo, sin parte de abajo). Solo se muestra en la lista cuando el tipo es vestido. */
+export const PARTES = ['Arriba', 'Abajo', 'Abrigo', 'Chaqueta', 'Calzado', 'Accesorio', 'Cinturón', 'Entero'] as const
+/** Lo que se ve en la lista de Parte */
+export const PARTES_VISIBLES = ['Arriba', 'Abajo', 'Abrigo', 'Chaqueta', 'Calzado', 'Accesorio', 'Cinturón'] as const
+/** Capas para el frío: abrigo (pesado) y chaqueta (liviana) */
+export const esCapa = (p: { parte: string }) => p.parte === 'Abrigo' || p.parte === 'Chaqueta'
 export type Parte = (typeof PARTES)[number]
 
 export const CLIMAS = ['Calor', 'Templado', 'Frío'] as const
@@ -66,8 +71,9 @@ export const PARTE_POR_TIPO: Record<Tipo, Parte> = {
   pollera: 'Abajo',
   vestido: 'Entero',
   abrigo: 'Abrigo',
+  chaqueta: 'Chaqueta',
   calzado: 'Calzado',
-  cartera: 'Cartera',
+  cartera: 'Accesorio',
   aros: 'Accesorio',
   collar: 'Accesorio',
   cinturón: 'Cinturón',
@@ -77,7 +83,7 @@ export const PARTE_POR_TIPO: Record<Tipo, Parte> = {
 export const PARTES_BASE: Parte[] = ['Arriba', 'Abajo', 'Entero']
 export const esBase = (p: { parte: Parte }) => PARTES_BASE.includes(p.parte)
 /** Carteras, accesorios y cinturones: no dependen del clima */
-export const PARTES_COMPLEMENTO: Parte[] = ['Cartera', 'Accesorio', 'Cinturón']
+export const PARTES_COMPLEMENTO: Parte[] = ['Accesorio', 'Cinturón']
 
 export interface DiaClima {
   fecha: string // YYYY-MM-DD

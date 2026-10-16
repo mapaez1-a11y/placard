@@ -6,15 +6,14 @@ import { useLooks, usePrendas } from '../lib/hooks'
 import type { Parte, Prenda, Tipo } from '../lib/types'
 import { useNav } from '../nav'
 
-const FILTROS = ['Todo', 'Arriba', 'Abajo', 'Abrigo', 'Calzado', 'Carteras', 'Accesorios', 'Cinturones'] as const
+const FILTROS = ['Todo', 'Arriba', 'Abajo', 'Abrigo', 'Chaqueta', 'Calzado', 'Accesorios', 'Cinturones'] as const
 type Filtro = (typeof FILTROS)[number]
 
 /** Secciones del placard: qué partes entran y con qué tipo se agrega una nueva */
 const SECCIONES: { filtro: Filtro; titulo: string; partes: Parte[]; tipo: Tipo; vacio: string }[] = [
-  { filtro: 'Todo', titulo: 'Ropa', partes: ['Arriba', 'Abajo', 'Entero', 'Abrigo'], tipo: 'remera', vacio: 'Agregar prenda' },
+  { filtro: 'Todo', titulo: 'Ropa', partes: ['Arriba', 'Abajo', 'Entero', 'Abrigo', 'Chaqueta'], tipo: 'remera', vacio: 'Agregar prenda' },
   { filtro: 'Calzado', titulo: 'Calzado', partes: ['Calzado'], tipo: 'calzado', vacio: 'Agregar calzado' },
-  { filtro: 'Carteras', titulo: 'Carteras', partes: ['Cartera'], tipo: 'cartera', vacio: 'Agregar cartera' },
-  { filtro: 'Accesorios', titulo: 'Accesorios · aros y collares', partes: ['Accesorio'], tipo: 'aros', vacio: 'Agregar accesorio' },
+  { filtro: 'Accesorios', titulo: 'Accesorios · carteras, aros y collares', partes: ['Accesorio'], tipo: 'aros', vacio: 'Agregar accesorio' },
   { filtro: 'Cinturones', titulo: 'Cinturones', partes: ['Cinturón'], tipo: 'cinturón', vacio: 'Agregar cinturón' },
 ]
 
@@ -33,8 +32,8 @@ export default function Placard() {
   const secciones =
     filtro === 'Todo'
       ? SECCIONES.map((sec) => ({ ...sec, prendas: prendas.filter((p) => sec.partes.includes(p.parte)) }))
-      : filtro === 'Arriba' || filtro === 'Abajo' || filtro === 'Abrigo'
-        ? [{ ...SECCIONES[0], titulo: filtro, tipo: (filtro === 'Arriba' ? 'remera' : filtro === 'Abajo' ? 'pantalón' : 'abrigo') as Tipo, prendas: ropa.filter((p) => p.parte === filtro || (filtro === 'Arriba' && p.parte === 'Entero')) }]
+      : filtro === 'Arriba' || filtro === 'Abajo' || filtro === 'Abrigo' || filtro === 'Chaqueta'
+        ? [{ ...SECCIONES[0], titulo: filtro, tipo: (filtro === 'Arriba' ? 'remera' : filtro === 'Abajo' ? 'pantalón' : filtro === 'Chaqueta' ? 'chaqueta' : 'abrigo') as Tipo, prendas: ropa.filter((p) => p.parte === filtro || (filtro === 'Arriba' && p.parte === 'Entero')) }]
         : SECCIONES.filter((sec) => sec.filtro === filtro).map((sec) => ({ ...sec, prendas: prendas.filter((p) => sec.partes.includes(p.parte)) }))
 
   return (

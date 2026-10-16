@@ -27,8 +27,9 @@ export default function PrendaDetalle({ id }: { id: string }) {
   const filas: [string, string][] = [
     ['Tipo', prenda.tipo],
     ['Parte', prenda.parte],
-    ['Color', prenda.color || '—'],
-    ['Tela', prenda.tela || '—'],
+    ...((prenda.parte === 'Accesorio'
+      ? [['Tono', prenda.color === 'Dorado' || prenda.color === 'Plateado' ? prenda.color : `Color${prenda.color ? ` (${prenda.color.toLowerCase()})` : ''}`]]
+      : [['Color', prenda.color || '—'], ['Tela', prenda.tela || '—']]) as [string, string][]),
     ['Clima', prenda.clima.join(' · ') || '—'],
     ['Ocasión', prenda.ocasiones.join(' · ') || '—'],
     ['Uso', textoUso(prenda.vecesUsada)],
