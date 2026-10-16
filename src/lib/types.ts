@@ -1,4 +1,4 @@
-export const TIPOS = ['blusa', 'camisa', 'remera', 'pantalón', 'pollera', 'vestido', 'abrigo', 'calzado', 'cartera', 'aros', 'collar', 'cinturón'] as const
+export const TIPOS = ['blusa', 'camisa', 'remera', 'sweater', 'pantalón', 'short', 'pollera', 'vestido', 'abrigo', 'calzado', 'cartera', 'aros', 'collar', 'cinturón'] as const
 export type Tipo = (typeof TIPOS)[number]
 
 export const PARTES = ['Arriba', 'Abajo', 'Entero', 'Abrigo', 'Calzado', 'Cartera', 'Accesorio', 'Cinturón'] as const
@@ -60,7 +60,9 @@ export const PARTE_POR_TIPO: Record<Tipo, Parte> = {
   blusa: 'Arriba',
   camisa: 'Arriba',
   remera: 'Arriba',
+  sweater: 'Arriba',
   pantalón: 'Abajo',
+  short: 'Abajo',
   pollera: 'Abajo',
   vestido: 'Entero',
   abrigo: 'Abrigo',

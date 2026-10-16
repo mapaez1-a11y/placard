@@ -34,8 +34,15 @@ export default defineConfig({
       workbox: {
         globPatterns: ['**/*.{js,css,html,svg,png,woff2}'],
         // El motor para quitar fondos es pesado y opcional: no lo precacheamos
-        globIgnores: ['**/ort*', '**/*.wasm'],
+        globIgnores: ['**/ort*', '**/*.wasm', '**/modelo.worker*', '**/transformers*'],
+        maximumFileSizeToCacheInBytes: 3 * 1024 * 1024,
         runtimeCaching: [
+          {
+            // Motores de reconocimiento y quitar fondo: se guardan al usarlos por primera vez
+            urlPattern: ({ url }) => /\/assets\/(ort|modelo\.worker|transformers)/.test(url.pathname),
+            handler: 'CacheFirst',
+            options: { cacheName: 'motores', expiration: { maxEntries: 20 } },
+          },
           {
             urlPattern: /^https:\/\/api\.open-meteo\.com\/.*/i,
             handler: 'NetworkFirst',

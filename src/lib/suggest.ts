@@ -107,7 +107,7 @@ export function sugerir(
     const opciones = validos.map((c, i): Sugerencia => {
       const abrigo = necesitaAbrigo && abrigos.length ? abrigos[i % abrigos.length] : null
       // El cinturón va con pantalón, pollera o vestido; no con una remera sola
-      const llevaCinturon = c.prendas.some((p) => p.tipo === 'pantalón' || p.tipo === 'pollera' || p.tipo === 'vestido')
+      const llevaCinturon = c.prendas.some((p) => p.tipo === 'pantalón' || p.tipo === 'pollera' || p.tipo === 'vestido' || p.tipo === 'short')
       return {
         prendas: c.prendas,
         abrigo,

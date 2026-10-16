@@ -64,6 +64,7 @@ Después, en la app: **Hoy → ícono de ajustes → Crear cuenta**. Entrá con 
 
 - **Clima de donde estés:** cada vez que abrís la app (o volvés a ella) usa la ubicación actual del celular. Si viajaste, el clima ya es el del destino. La ciudad de Ajustes queda solo como respaldo si no das permiso de ubicación.
 - **Viajes:** creá un viaje con destino y fechas. Ves el clima de cada día (pronóstico real hasta 16 días; más lejos, estimado con el clima de esas fechas del año pasado), armás la valija o dejás que la app te la sugiera, te avisa lo que falta (abrigo, calzado para lluvia, ropa para cierto clima) y te propone un look distinto por día solo con lo que llevás. Mientras el viaje está en curso, la pestaña Hoy sugiere con la valija.
+- **Reconocimiento automático:** al sacar o elegir la foto, la app detecta el tipo de prenda (remera, sweater, pantalón, short, pollera, vestido, abrigo, calzado, cartera, aros, collar, cinturón), el color y la tela, y completa los campos marcados como «sugerido». Todo se puede cambiar. Usa un modelo de visión (CLIP) que corre en el celular: la primera vez descarga unos 150 MB y después funciona sin internet. Se apaga en Ajustes.
 - **Favoritos:** pestaña propia con los looks que marcaste con estrella, filtrables por ocasión y con un botón para usarlos hoy.
 - **Carteras, accesorios (aros y collares) y cinturones:** tienen su propia sección en el Placard, se suman a los looks sugeridos y los podés agregar a mano en Armar.
 

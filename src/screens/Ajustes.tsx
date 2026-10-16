@@ -8,6 +8,7 @@ import { prefs, type CiudadPref } from '../lib/prefs'
 import { borrarTodo } from '../lib/repo'
 import { supabase } from '../lib/supabase'
 import { alCerrarSesion, sincronizar, useEstadoSync } from '../lib/sync'
+import { reconocimientoActivo, setReconocimientoActivo } from '../lib/reconocer'
 import { buscarCiudad } from '../lib/weather'
 import { useNav } from '../nav'
 
@@ -27,6 +28,7 @@ export default function Ajustes() {
       <div className="space-y-8 px-4">
         <Cuenta />
         <Ciudad />
+        <Reconocimiento />
         <Datos />
         <p className="rotulo pb-4 text-center !text-[11px]">Placard v1.0 · tus datos quedan en este dispositivo</p>
       </div>
@@ -334,5 +336,28 @@ function Fila({ k, v }: { k: string; v: ReactNode }) {
       <dt className="rotulo">{k}</dt>
       <dd>{v}</dd>
     </div>
+  )
+}
+
+// ---------- Reconocimiento ----------
+
+function Reconocimiento() {
+  const [activo, setActivo] = useState(reconocimientoActivo())
+  const cambiar = () => {
+    setReconocimientoActivo(!activo)
+    setActivo(!activo)
+  }
+  return (
+    <Seccion titulo="Reconocer prendas">
+      <button onClick={cambiar} role="switch" aria-checked={activo} className="flex min-h-11 w-full items-center justify-between gap-4 text-left">
+        <span className="text-[15px]">Completar los datos solo al sacar la foto</span>
+        <span className={`relative h-7 w-12 shrink-0 border ${activo ? 'border-acento bg-acento' : 'border-tinta bg-papel'}`}>
+          <span className={`absolute top-[3px] h-5 w-5 transition-all ${activo ? 'left-[23px] bg-papel' : 'left-[3px] bg-tinta'}`} />
+        </span>
+      </button>
+      <p className="text-[13px] leading-snug text-gris">
+        Detecta el tipo de prenda, el color y la tela. Siempre podés cambiar lo que sugiere. La primera vez descarga el reconocedor (unos 150 MB, conviene con wifi); después funciona sin internet y tus fotos no salen del celular.
+      </p>
+    </Seccion>
   )
 }
